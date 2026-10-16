@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1457d9">
+<title>BILIM English</title>
+<style>
+:root{--blue:#1457d9;--navy:#10264c;--bg:#f3f6fc;--white:#fff;--green:#12805c;--red:#c43d4b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--navy);font-family:system-ui,-apple-system,Arial,sans-serif}
+header{background:linear-gradient(135deg,#123a8c,#1768ed);color:white;padding:22px 16px 28px;border-radius:0 0 24px 24px}
+.wrap{max-width:760px;margin:auto;padding:0 14px}header .brand{font-size:26px;font-weight:850;letter-spacing:.5px}header p{margin:5px 0 0;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}.stat{background:#ffffff20;border:1px solid #ffffff30;border-radius:14px;padding:11px 8px;text-align:center}.stat b{display:block;font-size:21px}.stat span{font-size:12px}
+nav{display:flex;gap:8px;overflow:auto;padding:14px 0 10px}.tab{border:0;border-radius:12px;padding:11px 13px;background:#e3eaf8;color:#23416e;font-weight:700;white-space:nowrap}.tab.active{background:var(--blue);color:white}
+main{padding:6px 0 30px}.card{background:white;border-radius:18px;padding:17px;margin:10px 0;box-shadow:0 5px 18px #193d7510}.card h2{font-size:19px;margin:0 0 9px}.muted{color:#63728b;font-size:14px}.primary,.secondary,.danger{border:0;border-radius:12px;padding:12px 15px;font-weight:750;font-size:15px;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#eaf0fd;color:var(--blue)}.danger{background:#fff0f1;color:var(--red)}button:disabled{opacity:.5}.full{width:100%;margin-top:8px}
+.option{display:block;text-align:left;width:100%;padding:13px;margin:8px 0;border:1.5px solid #dce4f2;border-radius:12px;background:white;color:var(--navy);font-size:15px}.option:hover{border-color:var(--blue)}.option.correct{background:#e8f8f1;border-color:var(--green)}.option.wrong{background:#fff0f1;border-color:var(--red)}
+input,textarea,select{width:100%;padding:12px;border:1px solid #d4deee;border-radius:11px;margin:5px 0 10px;font:inherit;background:white;color:var(--navy)}label{font-size:13px;font-weight:700}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.pill{display:inline-block;background:#eaf0fd;color:var(--blue);border-radius:20px;padding:5px 9px;font-size:12px;font-weight:700}.question{font-size:21px;font-weight:800;margin:12px 0}.hidden{display:none!important}.leader{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #edf0f6}.rank{font-weight:900;width:28px}.leader .who{flex:1;font-weight:700}.pts{font-weight:800;color:var(--blue)}.notice{padding:12px;border-radius:12px;background:#fff7dc;color:#775817;font-size:13px}.success{color:var(--green);font-weight:700}.footer{text-align:center;color:#8190a6;font-size:12px;padding:12px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand">📘 BILIM English</div><p>Har kuni ozgina o‘rgan, katta natijaga erish!</p>
+  <div class="stats"><div class="stat"><b id="topPoints">0</b><span>Mening ballim</span></div><div class="stat"><b id="topDone">0</b><span>Testlar</span></div><div class="stat"><b id="topRank">—</b><span>O‘rnim</span></div></div>
+</div></header>
+<div class="wrap">
+<nav>
+<button class="tab active" data-page="home">🏠 Bosh sahifa</button>
+<button class="tab" data-page="quiz">📝 Test</button>
+<button class="tab" data-page="daily">🔥 Kunlik</button>
+<button class="tab" data-page="leaderboard">🏆 Reyting</button>
+<button class="tab" data-page="admin">⚙️ Boshqaruv</button>
+</nav>
+<main>
+<section id="home" class="page">
+<div class="card"><span class="pill">WELCOME</span><h2 style="margin-top:10px">Ingliz tilini o‘rganishni boshlaymiz!</h2><p class="muted">Testlarni yech, ball yig‘ va kunlik musobaqada qatnash.</p><label>Isming</label><input id="nameInput" maxlength="24" placeholder="Masalan: Sardor"><button class="primary full" id="saveName">Ismni saqlash</button></div>
+<div class="card"><h2>📚 Oddiy test</h2><p class="muted">Ingliz tilidagi so‘zlar va grammatikadan savollar.</p><button class="primary full" onclick="startQuiz('normal')">Testni boshlash →</button></div>
+<div class="card"><h2>🔥 Kunlik musobaqa</h2><p class="muted">Har kuni yangi kun hisobida qatnashib, natijangni ko‘r.</p><button class="secondary full" onclick="startQuiz('daily')">Musobaqaga kirish →</button></div>
+<div class="notice">Eslatma: bu birinchi sinov versiyasi. Hozircha natijalar shu qurilmada saqlanadi. Hamma foydalanuvchilar uchun umumiy reytingni yoqish uchun keyin ma’lumotlar bazasiga ulaymiz.</div>
+</section>
+<section id="quiz" class="page hidden"><div class="card" id="quizCard"><h2 id="quizTitle">Test</h2><div class="muted" id="progress">Savol 1</div><div class="question" id="questionText"></div><div id="options"></div><p id="feedback" class="muted"></p><button class="primary full" id="nextBtn" disabled>Keyingi savol →</button></div></section>
+<section id="daily" class="page hidden"><div class="card"><h2>🔥 Kunlik musobaqa</h2><p class="muted">Kunlik testda to‘g‘ri javob uchun 10 ball olasan. Kuniga bir marta hisoblanadi.</p><p id="dailyStatus"></p><button class="primary full" id="dailyStart" onclick="startQuiz('daily')">Bugungi testni boshlash</button></div></section>
+<section id="leaderboard" class="page hidden"><div class="card"><h2>🏆 Reyting</h2><p class="muted">Ushbu telefonda saqlangan ishtirokchilar natijalari.</p><div id="leaderList"></div></div></section>
+<section id="admin" class="page hidden">
+<div class="card" id="adminLogin"><h2>🔐 Boshqaruv bo‘limi</h2><p class="muted">Savol qo‘shish uchun admin parolini kiriting.</p><label>Admin paroli</label><input id="adminPass" type="password" placeholder="Parol"><button class="primary full" id="adminEnter">Kirish</button><p class="muted">Sinov paroli: <b>BILIM2026</b></p><div class="notice">Bu parol faqat demo uchun. Sayt ommaga ochilganda haqiqiy himoyani server tomonda sozlash kerak.</div></div>
+<div class="card hidden" id="adminPanel"><h2>➕ Yangi test savoli</h2><label>Savol (inglizcha)</label><input id="newQ" placeholder="Example: What is the opposite of hot?"><label>4 ta javobni vergul bilan yozing</label><textarea id="newOpts" rows="2" placeholder="cold, warm, fast, tall"></textarea><label>To‘g‘ri javobning raqami (1–4)</label><select id="newCorrect"><option value="0">1-javob</option><option value="1">2-javob</option><option value="2">3-javob</option><option value="3">4-javob</option></select><label>Tarjima / izoh (ixtiyoriy)</label><input id="newExplain" placeholder="hot — issiq, cold — sovuq"><button class="primary full" id="addQuestion">Savolni saqlash</button><p id="adminMsg" class="success"></p><hr><h2>Mavjud savollar</h2><div id="questionCount" class="muted"></div><button class="danger full" id="resetQuestions">Boshlang‘ich savollarni tiklash</button><button class="secondary full" id="adminExit">Chiqish</button></div>
+</section>
+</main><div class="footer">BILIM English • Har kuni bir qadam oldinga</div>
+</div>
+<script>
+const starterQuestions=[
+{q:"What does “apple” mean?",o:["Olma","Nok","Uzum","Shaftoli"],a:0,e:"Apple — olma."},
+{q:"Choose the correct sentence.",o:["She are happy.","She is happy.","She am happy.","She be happy."],a:1,e:"He / She / It bilan “is” ishlatiladi."},
+{q:"What is the opposite of “big”?",o:["Tall","Long","Small","Wide"],a:2,e:"Big — katta, small — kichik."},
+{q:"I ___ a student.",o:["is","are","am","be"],a:2,e:"I bilan “am” ishlatiladi."},
+{q:"What does “book” mean?",o:["Daftar","Kitob","Qalam","Sumka"],a:1,e:"Book — kitob."},
+{q:"Choose the plural of “child”.",o:["Childs","Childes","Children","Childrens"],a:2,e:"Child so‘zining ko‘pligi — children."},
+{q:"Yesterday, I ___ football.",o:["play","played","plays","playing"],a:1,e:"Yesterday o‘tgan zamonni bildiradi: played."},
+{q:"What is the opposite of “hot”?",o:["Warm","Cold","Dry","Soft"],a:1,e:"Hot — issiq, cold — sovuq."},
+{q:"She ___ to school every day.",o:["go","goes","going","gone"],a:1,e:"He / She / It bilan Present Simple’da goes."},
+{q:"What does “beautiful” mean?",o:["Chiroyli","Tez","Qimmat","Oson"],a:0,e:"Beautiful — chiroyli."},
+{q:"They ___ playing now.",o:["is","am","are","be"],a:2,e:"They bilan “are” ishlatiladi."},
+{q:"Choose the past form of “go”.",o:["Goed","Gone","Went","Going"],a:2,e:"Go — went — gone."},
+{q:"What does “usually” mean?",o:["Hech qachon","Odatda","Hozir","Kecha"],a:1,e:"Usually — odatda."},
+{q:"There ___ two books on the table.",o:["is","are","am","be"],a:1,e:"Ko‘plikdagi “two books” bilan are."},
+{q:"Choose the correct article: ___ orange.",o:["A","An","Thee","No article ever"],a:1,e:"Orange unli tovush bilan boshlanadi: an orange."},
+{q:"What is the comparative of “good”?",o:["Gooder","More good","Best","Better"],a:3,e:"Good — better — best."},
+{q:"I have lived here ___ 2020.",o:["for","since","from","at"],a:1,e:"Since aniq boshlanish vaqtiga ishlatiladi."},
+{q:"If it rains, we ___ stay home.",o:["will","would have","did","are"],a:0,e:"First conditional: If + present, will + verb."},
+{q:"What does “borrow” mean?",o:["Qarzga olmoq","Sotmoq","Yo‘qotmoq","Yasamoq"],a:0,e:"Borrow — vaqtincha olib turmoq."},
+{q:"Choose the correct question.",o:["Where you live?","Where does you live?","Where do you live?","Where are live you?"],a:2,e:"You bilan savolda do ishlatiladi."},
+{"q": "What does “teacher” mean?", "o": ["Shifokor", "O‘qituvchi", "Haydovchi", "Dehqon"], "a": 1, "e": "Teacher — o‘qituvchi."},
+{"q": "What does “window” mean?", "o": ["Eshik", "Devor", "Deraza", "Shift"], "a": 2, "e": "Window — deraza."},
+{"q": "Choose the correct form: He ___ coffee every morning.", "o": ["drink", "drinks", "drinking", "drank"], "a": 1, "e": "He bilan Present Simple’da drinks."},
+{"q": "We ___ at home yesterday.", "o": ["was", "were", "are", "be"], "a": 1, "e": "We bilan o‘tgan zamonda were."},
+{"q": "What is the past form of “eat”?", "o": ["Eated", "Ate", "Eating", "Eaten"], "a": 1, "e": "Eat — ate — eaten."},
+{"q": "Choose the opposite of “early”.", "o": ["Fast", "Late", "Soon", "Quick"], "a": 1, "e": "Early — erta, late — kech."},
+{"q": "What does “expensive” mean?", "o": ["Arzon", "Qimmat", "Bepul", "Yengil"], "a": 1, "e": "Expensive — qimmat."},
+{"q": "There ___ a cat under the table.", "o": ["are", "were", "is", "be"], "a": 2, "e": "Bitta mushuk: there is."},
+{"q": "I am interested ___ music.", "o": ["on", "at", "in", "for"], "a": 2, "e": "Interested in — ...ga qiziqmoq."},
+{"q": "Choose the correct plural of “man”.", "o": ["Mans", "Mens", "Men", "Manes"], "a": 2, "e": "Man — men."},
+{"q": "What does “always” mean?", "o": ["Ba’zan", "Doimo", "Kamdan-kam", "Hech qachon"], "a": 1, "e": "Always — doimo."},
+{"q": "She can ___ very well.", "o": ["sings", "singing", "sing", "sang"], "a": 2, "e": "Can dan keyin fe’lning oddiy shakli keladi."},
+{"q": "What is the opposite of “clean”?", "o": ["Clear", "Dirty", "Bright", "Fresh"], "a": 1, "e": "Clean — toza, dirty — iflos."},
+{"q": "They ___ TV at the moment.", "o": ["watch", "watches", "are watching", "watched"], "a": 2, "e": "At the moment — hozir: Present Continuous."},
+{"q": "Choose the correct article: ___ university.", "o": ["An", "A", "Thee", "No article"], "a": 1, "e": "University so‘zi /yuː/ tovushi bilan boshlanadi: a university."},
+{"q": "What does “quiet” mean?", "o": ["Shovqinli", "Tinch", "Xavfli", "Qiziqarli"], "a": 1, "e": "Quiet — tinch, sokin."},
+{"q": "I have ___ finished my homework.", "o": ["yet", "already", "tomorrow", "last"], "a": 1, "e": "Already — allaqachon."},
+{"q": "If I ___ time, I will call you.", "o": ["have", "had", "has", "having"], "a": 0, "e": "First conditional: If + Present Simple."},
+{"q": "What does “between” mean?", "o": ["Ustida", "Ichida", "O‘rtasida", "Orqasida"], "a": 2, "e": "Between — ikki narsa o‘rtasida."},
+{"q": "Choose the comparative of “easy”.", "o": ["Easyer", "More easy", "Easier", "Easiest"], "a": 2, "e": "Easy — easier — easiest."},
+{"q": "My brother is ___ than me.", "o": ["tall", "taller", "tallest", "more tall"], "a": 1, "e": "Than bilan qiyosiy daraja: taller."},
+{"q": "What does “hungry” mean?", "o": ["Chanqagan", "Och", "Charchagan", "Uyqusi kelgan"], "a": 1, "e": "Hungry — och."},
+{"q": "She ___ never been to London.", "o": ["have", "has", "is", "was"], "a": 1, "e": "She bilan Present Perfect’da has."},
+{"q": "We arrived ___ 8 o’clock.", "o": ["in", "on", "at", "by"], "a": 2, "e": "Aniq soat bilan at ishlatiladi."},
+{"q": "What does “careful” mean?", "o": ["Ehtiyotkor", "Dangasa", "Jahldor", "Zaif"], "a": 0, "e": "Careful — ehtiyotkor."},
+{"q": "Choose the correct sentence.", "o": ["They doesn't like tea.", "They don't like tea.", "They not like tea.", "They isn't like tea."], "a": 1, "e": "They bilan don't ishlatiladi."},
+{"q": "What is the past form of “buy”?", "o": ["Buyed", "Bought", "Buying", "Buys"], "a": 1, "e": "Buy — bought."},
+{"q": "I’m looking ___ my keys.", "o": ["at", "for", "in", "with"], "a": 1, "e": "Look for — qidirmoq."},
+{"q": "What does “usually” mean?", "o": ["Odatda", "Hozir", "Hech qachon", "Bir marta"], "a": 0, "e": "Usually — odatda."},
+{"q": "There isn’t ___ milk left.", "o": ["some", "many", "any", "few"], "a": 2, "e": "Inkor gaplarda odatda any ishlatiladi."},
+{"q": "What does “dangerous” mean?", "o": ["Xavfsiz", "Xavfli", "Foydali", "Oson"], "a": 1, "e": "Dangerous — xavfli."},
+{"q": "He is good ___ football.", "o": ["in", "at", "on", "for"], "a": 1, "e": "Good at — biror ishni yaxshi bajarmoq."},
+{"q": "Choose the correct superlative of “small”.", "o": ["Smaller", "Smallest", "Most small", "Small"], "a": 1, "e": "Small — smaller — smallest."},
+{"q": "I ___ my friend tomorrow.", "o": ["meet", "met", "will meet", "meeting"], "a": 2, "e": "Tomorrow uchun kelasi zamon: will meet."},
+{"q": "What does “lend” mean?", "o": ["Qarzga bermoq", "Qarzga olmoq", "Sotib olmoq", "Topmoq"], "a": 0, "e": "Lend — vaqtincha berib turmoq."},
+{"q": "They have lived here ___ five years.", "o": ["since", "for", "from", "during"], "a": 1, "e": "Davomiy muddat bilan for ishlatiladi."},
+{"q": "Choose the correct question.", "o": ["Did you went home?", "Did you go home?", "Do you went home?", "Were you go home?"], "a": 1, "e": "Did dan keyin fe’lning oddiy shakli: go."},
+{"q": "What does “improve” mean?", "o": ["Yomonlashmoq", "Yaxshilamoq", "Unutmoq", "To‘xtamoq"], "a": 1, "e": "Improve — yaxshilamoq."},
+{"q": "I was tired, ___ I went to bed early.", "o": ["because", "but", "so", "although"], "a": 2, "e": "So — shuning uchun."},
+{"q": "What does “usually” describe?", "o": ["Odat", "O‘tgan zamon", "Joy", "Rang"], "a": 0, "e": "Usually odatiy ish-harakatni bildiradi."},
+{"q": "She has ___ apples than I do.", "o": ["much", "more", "most", "many"], "a": 1, "e": "Apples sanaladi; qiyosiy shakl more."},
+{"q": "Choose the correct spelling.", "o": ["Beautiful", "Beautifull", "Beutiful", "Beautifal"], "a": 0, "e": "To‘g‘ri yozilishi: beautiful."},
+{"q": "What does “lend me a hand” mean?", "o": ["Qo‘limni ber", "Menga yordam ber", "Ketib qol", "Kutib tur"], "a": 1, "e": "Lend me a hand — menga yordam ber."},
+{"q": "I enjoy ___ books.", "o": ["read", "to read", "reading", "reads"], "a": 2, "e": "Enjoy dan keyin -ing shakli keladi."},
+{"q": "The film was ___ than I expected.", "o": ["interesting", "more interesting", "most interesting", "interest"], "a": 1, "e": "Uzun sifatlarda more interesting."},
+{"q": "What does “crowded” mean?", "o": ["Bo‘sh", "Odam gavjum", "Jim", "Toza"], "a": 1, "e": "Crowded — odam gavjum."},
+{"q": "You ___ wear a seat belt.", "o": ["should", "would", "might to", "are"], "a": 0, "e": "Should maslahat yoki tavsiya bildiradi."},
+{"q": "What is the opposite of “remember”?", "o": ["Repeat", "Forget", "Remind", "Learn"], "a": 1, "e": "Remember — eslamoq, forget — unutmoq."},
+{"q": "By the time we arrived, the train ___.", "o": ["leaves", "has left", "had left", "leave"], "a": 2, "e": "Oldin sodir bo‘lgan ish: Past Perfect."},
+{"q": "What does “polite” mean?", "o": ["Qo‘pol", "Odobli", "Shoshqaloq", "Xafa"], "a": 1, "e": "Polite — odobli, muloyim."},
+{"q": "I wish I ___ taller.", "o": ["am", "were", "will be", "be"], "a": 1, "e": "I wish bilan hozirgi noreal holatda were ishlatilishi mumkin."},
+{"q": "Neither Ali nor his friends ___ here.", "o": ["is", "was", "are", "be"], "a": 2, "e": "Nor dan keyingi ko‘plik subject: are."},
+{"q": "What does “achievement” mean?", "o": ["Muvaffaqiyat", "Muammo", "Savol", "Safar"], "a": 0, "e": "Achievement — erishilgan yutuq."},
+{"q": "She asked me where I ___.", "o": ["live", "lived", "do live", "am live"], "a": 1, "e": "Reported speech’da zamon ko‘pincha orqaga siljiydi."},
+{"q": "The room ___ every day.", "o": ["cleans", "is cleaned", "cleaned", "is cleaning"], "a": 1, "e": "Majhul nisbat: is cleaned."},
+{"q": "What does “reliable” mean?", "o": ["Ishonchli", "Qimmat", "Zerikarli", "Yolg‘iz"], "a": 0, "e": "Reliable — ishonchli."},
+{"q": "If I had studied, I ___ the exam.", "o": ["pass", "will pass", "would have passed", "passed"], "a": 2, "e": "Third conditional: would have + V3."},
+{"q": "She speaks English ___ than her brother.", "o": ["fluent", "more fluently", "most fluent", "fluently"], "a": 1, "e": "Fe’lni ravish bilan ifodalaymiz: more fluently."},
+{"q": "What does “environment” mean?", "o": ["Atrof-muhit", "Hukumat", "Iqtisod", "Sog‘liq"], "a": 0, "e": "Environment — atrof-muhit."},
+{"q": "Despite ___ tired, he continued working.", "o": ["be", "being", "was", "been"], "a": 1, "e": "Despite dan keyin ot yoki -ing shakli keladi."},
+{"q": "I look forward to ___ you.", "o": ["see", "seeing", "saw", "seen"], "a": 1, "e": "Look forward to dan keyin -ing ishlatiladi."},
+{"q": "What does “generous” mean?", "o": ["Xasis", "Saxiy", "Jiddiy", "Zaif"], "a": 1, "e": "Generous — saxiy."},
+{"q": "No sooner ___ we arrived than it started raining.", "o": ["did", "had", "have", "were"], "a": 1, "e": "No sooner had ... than — inversiya."},
+{"q": "The book, ___ I borrowed yesterday, is excellent.", "o": ["who", "where", "which", "whose"], "a": 2, "e": "Narsa uchun which ishlatiladi."},
+{"q": "What does “accurate” mean?", "o": ["Aniq", "Noto‘g‘ri", "Sekin", "Qimmat"], "a": 0, "e": "Accurate — aniq, xatosiz."},
+{"q": "He denied ___ the window.", "o": ["break", "to break", "breaking", "broke"], "a": 2, "e": "Deny dan keyin -ing shakli keladi."},
+{"q": "Had I known, I ___ you.", "o": ["would tell", "would have told", "will tell", "told"], "a": 1, "e": "Had I known = If I had known."},
+{"q": "What does “reluctant” mean?", "o": ["Istaksiz", "Xursand", "Ishonchli", "Tez"], "a": 0, "e": "Reluctant — xohlamaydigan, istaksiz."},
+{"q": "This is the person ___ car was stolen.", "o": ["who", "whose", "which", "whom"], "a": 1, "e": "Egalik uchun whose ishlatiladi."},
+{"q": "She suggested ___ a taxi.", "o": ["take", "to take", "taking", "took"], "a": 2, "e": "Suggest dan keyin -ing ishlatiladi."},
+{"q": "What does “inevitable” mean?", "o": ["Muqarrar", "Ixtiyoriy", "Noaniq", "Vaqtinchalik"], "a": 0, "e": "Inevitable — oldini olib bo‘lmaydigan, muqarrar."},
+{"q": "Hardly had he sat down ___ the phone rang.", "o": ["than", "when", "then", "while"], "a": 1, "e": "Hardly ... when tuzilmasi ishlatiladi."},
+{"q": "The proposal was rejected, ___ surprised everyone.", "o": ["that", "what", "which", "who"], "a": 2, "e": "Butun oldingi fikrga ishora qiluvchi which."},
+{"q": "What does “substantial” mean?", "o": ["Juda kichik", "Katta miqdordagi / sezilarli", "Keraksiz", "Yashirin"], "a": 1, "e": "Substantial — sezilarli, katta miqdordagi."},
+{"q": "She is used to ___ up early.", "o": ["get", "got", "getting", "gets"], "a": 2, "e": "Be used to dan keyin -ing keladi."},
+{"q": "Were I you, I ___ apologize.", "o": ["will", "would", "did", "am"], "a": 1, "e": "Were I you — If I were you."},
+{"q": "What does “ambiguous” mean?", "o": ["Aniq", "Ikki xil talqin qilinishi mumkin", "Oson", "Qisqa"], "a": 1, "e": "Ambiguous — noaniq, ikki ma’noli."},
+{"q": "Not only ___ he apologize, but he also offered to help.", "o": ["did", "was", "has", "does"], "a": 0, "e": "Not only gap boshida kelganda inversiya: did he apologize."},
+{"q": "The data ___ that the plan may work.", "o": ["suggests", "suggest", "suggesting", "is suggest"], "a": 1, "e": "Data ko‘plikda ishlatilishi mumkin: suggest."},
+{"q": "What does “meticulous” mean?", "o": ["Juda sinchkov", "Beparvo", "Shoshqaloq", "Ochiq"], "a": 0, "e": "Meticulous — juda sinchkov, mayda detalgacha e’tiborli."}
+]; 
+const $=id=>document.getElementById(id);
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+let questions=load("bilim_questions",starterQuestions);
+let players=load("bilim_players",[]);
+let profile=load("bilim_profile",{name:"",points:0,done:0,dailyDate:""});
+let current=[],idx=0,score=0,chosen=null,mode="normal",admin=false;
+function save(){localStorage.setItem("bilim_questions",JSON.stringify(questions));localStorage.setItem("bilim_players",JSON.stringify(players));localStorage.setItem("bilim_profile",JSON.stringify(profile))}
+function today(){let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function ensurePlayer(){if(!profile.name)profile.name="Mehmon";let p=players.find(x=>x.name.toLowerCase()===profile.name.toLowerCase());if(!p){p={name:profile.name,points:0,done:0};players.push(p)}return p}
+function update(){let p=ensurePlayer();p.points=profile.points;p.done=profile.done;save();$("topPoints").textContent=profile.points;$("topDone").textContent=profile.done;let sorted=[...players].sort((a,b)=>b.points-a.points);let rank=sorted.findIndex(x=>x.name.toLowerCase()===profile.name.toLowerCase())+1;$("topRank").textContent=rank?rank:"—";$("nameInput").value=profile.name;$("dailyStatus").textContent=profile.dailyDate===today()?"Bugungi musobaqada qatnashding! Ertaga yana urinib ko‘r.":"Bugungi musobaqaga hali qatnashmading."; $("dailyStart").disabled=profile.dailyDate===today();renderLeaders();$("questionCount").textContent=questions.length+" ta savol mavjud."}
+function page(name){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(name).classList.remove("hidden");document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.page===name));if(name==="leaderboard")renderLeaders();if(name==="daily")update()}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>page(b.dataset.page)));
+$("saveName").onclick=()=>{let n=$("nameInput").value.trim();if(!n){alert("Ismingni yoz!");return}let old=profile.name;profile.name=n.slice(0,24);if(old&&old.toLowerCase()!==profile.name.toLowerCase()){let p=players.find(x=>x.name.toLowerCase()===old.toLowerCase());if(p)p.name=profile.name}ensurePlayer();update();alert("Ism saqlandi!");};
+function startQuiz(which){if(which==="daily"&&profile.dailyDate===today()){alert("Bugungi musobaqada qatnashib bo‘lding.");return}if(!profile.name||profile.name==="Mehmon"){let n=prompt("Ismingni yoz:");if(!n||!n.trim()){alert("Davom etish uchun ism kerak.");return}profile.name=n.trim().slice(0,24)}mode=which;current=[...questions].sort(()=>Math.random()-.5).slice(0,Math.min(10,questions.length));idx=0;score=0;chosen=null;$("quizTitle").textContent=which==="daily"?"🔥 Kunlik musobaqa":"📝 Ingliz tili testi";page("quiz");showQuestion()}
+function showQuestion(){let q=current[idx];$("progress").textContent=`Savol ${idx+1} / ${current.length}`;$("questionText").textContent=q.q;$("options").innerHTML="";$("feedback").textContent="";$("nextBtn").disabled=true;$("nextBtn").textContent=idx===current.length-1?"Natijani ko‘rish":"Keyingi savol →";q.o.forEach((op,i)=>{let b=document.createElement("button");b.className="option";b.textContent=(i+1)+". "+op;b.onclick=()=>answer(i,b);$("options").appendChild(b)})}
+function answer(i,btn){if(chosen!==null)return;chosen=i;let q=current[idx];document.querySelectorAll(".option").forEach((b,j)=>{b.disabled=true;if(j===q.a)b.classList.add("correct");if(j===i&&i!==q.a)b.classList.add("wrong")});if(i===q.a){score++;$("feedback").textContent="✅ To‘g‘ri! "+(q.e||"");$("feedback").className="success"}else{$("feedback").textContent="❌ To‘g‘ri javob: "+q.o[q.a]+". "+(q.e||"");$("feedback").className="muted"}$("nextBtn").disabled=false}
+$("nextBtn").onclick=()=>{if(chosen===null)return;if(idx<current.length-1){idx++;chosen=null;showQuestion()}else finish()};
+function finish(){let earned=score*10;profile.points+=earned;profile.done++;if(mode==="daily")profile.dailyDate=today();update();$("quizCard").innerHTML=`<h2>🎉 Test tugadi!</h2><p class="muted">${current.length} ta savoldan ${score} tasiga to‘g‘ri javob berding.</p><div class="question">+${earned} ball</div><p>Jami balling: <b>${profile.points}</b></p><button class="primary full" onclick="location.reload()">Bosh sahifaga qaytish</button><button class="secondary full" onclick="page('leaderboard')">Reytingni ko‘rish</button>`}
+function renderLeaders(){let list=[...players].sort((a,b)=>b.points-a.points);$("leaderList").innerHTML=list.length?list.map((p,i)=>`<div class="leader"><div class="rank">${["🥇","🥈","🥉"][i]||("#"+(i+1))}</div><div class="who">${escapeHtml(p.name)}${p.name.toLowerCase()===profile.name.toLowerCase()?" (sen)":""}<div class="muted">${p.done} ta test</div></div><div class="pts">${p.points} ball</div></div>`).join(""):'<p class="muted">Hozircha natija yo‘q. Birinchi testni ishlang!</p>'}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("adminEnter").onclick=()=>{if($("adminPass").value==="BILIM2026"){admin=true;$("adminLogin").classList.add("hidden");$("adminPanel").classList.remove("hidden")}else alert("Parol noto‘g‘ri.")};
+$("adminExit").onclick=()=>{admin=false;$("adminPanel").classList.add("hidden");$("adminLogin").classList.remove("hidden");$("adminPass").value=""};
+$("addQuestion").onclick=()=>{if(!admin)return;let q=$("newQ").value.trim(),opts=$("newOpts").value.split(",").map(x=>x.trim()).filter(Boolean),a=Number($("newCorrect").value),e=$("newExplain").value.trim();if(!q||opts.length!==4){alert("Savol va vergul bilan ajratilgan 4 ta javobni kiriting.");return}questions.push({q,o:opts,a,e});save();$("newQ").value="";$("newOpts").value="";$("newExplain").value="";$("adminMsg").textContent="Savol saqlandi!";update()};
+$("resetQuestions").onclick=()=>{if(confirm("Barcha qo‘shilgan savollar o‘chirilib, boshlang‘ich savollar tiklansinmi?")){questions=starterQuestions;save();update();$("adminMsg").textContent="Boshlang‘ich savollar tiklandi."}};
+update();
+</script>
+</body></html>
